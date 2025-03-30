@@ -3,308 +3,342 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Live cryptocurrency market tracker with real-time prices, market caps, and trading volumes">
-    <title>Live Crypto Market Tracker</title>
+    <meta name="description" content="Live cryptocurrency trading platform">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: wss:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://s3.tradingview.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' https: data:; connect-src 'self' https://api.coincap.io wss://ws.coincap.io https://api.coingecko.com;">
+    <base href="/titovictoriano/kryptomarket/">
+    <title>Crypto Trading Platform</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- TradingView Widget -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <!-- Custom CSS -->
     <style>
-        .crypto-card {
-            transition: transform 0.3s;
+        :root {
+            --bg-dark: #1a1b1e;
+            --bg-darker: #131517;
+            --text-primary: #e4e6eb;
+            --text-secondary: #b0b3b8;
+            --border-color: #2c2e33;
+            --up-color: #26a69a;
+            --down-color: #ef5350;
+            --card-bg: #242526;
         }
-        .crypto-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
-        .up {
-            color: #28a745;
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
         }
-        .down {
-            color: #dc3545;
+
+        .card-header {
+            background-color: var(--bg-darker);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
         }
-        .price-change {
-            font-weight: bold;
+
+        .trading-pair {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--bg-darker);
         }
-        .dashboard-header {
-            background: linear-gradient(to right, #4b6cb7, #182848);
+
+        .trading-pair .fw-bold {
+            color: #ffeb3b;
+        }
+
+        .trading-pair img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .price-display {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        .trading-controls {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background-color: var(--bg-darker);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .trading-controls button {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.25rem 1rem;
+            border-radius: 4px;
+        }
+
+        .trading-controls button.active {
+            background-color: var(--border-color);
+        }
+
+        .order-form {
+            padding: 1rem;
+        }
+
+        .order-type {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .order-type button {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .btn-buy {
+            background-color: var(--up-color);
             color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
+        }
+
+        .btn-sell {
+            background-color: var(--down-color);
+            color: white;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-darker);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-darker);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+            box-shadow: none;
+        }
+
+        .order-book {
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        .order-book-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .order-book-buy {
+            color: var(--up-color);
+        }
+
+        .order-book-sell {
+            color: var(--down-color);
+        }
+
+        .chart-container {
+            height: 400px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        /* Recent Trades Table Styles */
+        .table {
+            margin-bottom: 0;
+            color: var(--text-primary) !important;
+        }
+
+        .table-dark {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            --bs-table-bg: var(--card-bg);
+            --bs-table-color: var(--text-primary);
+            --bs-table-hover-bg: var(--bg-darker);
+            --bs-table-hover-color: var(--text-primary);
+        }
+
+        .table-dark th {
+            background-color: var(--bg-darker);
+            border-color: var(--border-color);
+            color: var(--text-secondary);
+            font-weight: 500;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .table-dark td {
+            border-color: var(--border-color);
+            color: var(--text-primary);
+            background-color: transparent;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: var(--bg-darker);
+            color: var(--text-primary);
+        }
+
+        .table-responsive {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .text-success {
+            color: var(--up-color) !important;
+        }
+
+        .text-danger {
+            color: var(--down-color) !important;
+        }
+
+        .up {
+            color: var(--up-color);
+        }
+
+        .down {
+            color: var(--down-color);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        /* Recent Trades heading */
+        .card-header h5.mb-0:contains("Recent Trades") {
+            color: #ffeb3b;
+        }
+
+        /* Card header styles */
+        .card-header h5.mb-0 {
+            color: #ffeb3b;
         }
     </style>
 </head>
 <body>
-    <!-- Loading Indicator -->
-    <div id="loadingIndicator" class="position-fixed top-0 start-0 w-100 h-100 d-none" 
-         style="background: rgba(0,0,0,0.5); z-index: 9999;" data-loading-indicator>
-        <div class="position-absolute top-50 start-50 translate-middle text-white">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Header -->
-    <header class="dashboard-header" role="banner">
-        <div class="container">
-            <h1 class="text-center mb-3">Crypto Market Dashboard</h1>
-            <p class="text-center">Real-time cryptocurrency market data</p>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main role="main" class="container">
-        <!-- Market Overview Section -->
-        <section aria-labelledby="market-overview-title">
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h2 class="h5 mb-0" id="market-overview-title">Market Overview</h2>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="autoRefreshToggle" 
-                                       checked data-loading-disable>
-                                <label class="form-check-label" for="autoRefreshToggle">Auto-refresh</label>
-                            </div>
+    <div class="container-fluid py-3">
+        <div class="row">
+            <!-- Left Column - Trading Interface -->
+            <div class="col-md-3">
+                <div class="card mb-3">
+                    <div class="trading-pair">
+                        <img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="BTC">
+                        <div>
+                            <div class="fw-bold">BTC/USDT</div>
+                            <small class="text-secondary">Bitcoin</small>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3 col-sm-6 mb-3">
-                                    <div class="card bg-light">
-                                        <div class="card-body text-center">
-                                            <h6>Market Cap</h6>
-                                            <h4 id="totalMarketCap">$0.00B</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 col-sm-6 mb-3">
-                                    <div class="card bg-light">
-                                        <div class="card-body text-center">
-                                            <h6>24h Volume</h6>
-                                            <h4 id="total24hVolume">$0.00B</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 col-sm-6 mb-3">
-                                    <div class="card bg-light">
-                                        <div class="card-body text-center">
-                                            <h6>BTC Dominance</h6>
-                                            <h4 id="btcDominance">0.00%</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 col-sm-6 mb-3">
-                                    <div class="card bg-light">
-                                        <div class="card-body text-center">
-                                            <h6>Cryptocurrencies</h6>
-                                            <h4 id="cryptoCount">0</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="price-display p-3">
+                        <div class="h3 mb-1">$65,084.55</div>
+                        <div class="text-success">+2.04%</div>
+                    </div>
+                    <div class="order-form">
+                        <div class="order-type mb-3">
+                            <button class="btn-buy">Buy</button>
+                            <button class="btn-sell">Sell</button>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Amount BTC</label>
+                            <input type="number" class="form-control" placeholder="0.00">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Price USDT</label>
+                            <input type="number" class="form-control" placeholder="65,084.55">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Total USDT</label>
+                            <input type="number" class="form-control" placeholder="0.00">
+                        </div>
+                        <button class="btn btn-success w-100">Buy BTC</button>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <!-- Filter and Sort Section -->
-        <section aria-label="Data controls" class="row mb-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="searchInput" class="form-label">Search cryptocurrency</label>
-                                <input type="text" class="form-control" id="searchInput" 
-                                       placeholder="Enter name or symbol" data-loading-disable>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="sortSelect" class="form-label">Sort by</label>
-                                <select class="form-select" id="sortSelect" data-loading-disable>
-                                    <option value="rank">Rank</option>
-                                    <option value="name">Name</option>
-                                    <option value="price">Price</option>
-                                    <option value="change">24h Change</option>
-                                    <option value="marketCap">Market Cap</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="currencySelect" class="form-label">Currency</label>
-                                <select class="form-select" id="currencySelect" data-loading-disable>
-                                    <option value="USD">USD</option>
-                                    <option value="EUR">EUR</option>
-                                    <option value="GBP">GBP</option>
-                                    <option value="JPY">JPY</option>
-                                </select>
-                            </div>
-                        </div>
+            <!-- Middle Column - Chart -->
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Price Chart</h5>
                     </div>
+                    <div id="tradingview-chart" style="height: 500px;"></div>
                 </div>
             </div>
-        </section>
 
-        <!-- Crypto Table Section -->
-        <section aria-labelledby="crypto-table-title" class="row mb-4">
-            <div class="col-md-12">
+            <!-- Right Column - Order Book -->
+            <div class="col-md-3">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="h5 mb-0" id="crypto-table-title">Top Cryptocurrencies</h2>
+                        <h5 class="mb-0">Order Book</h5>
                     </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover" aria-label="Cryptocurrency data">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Price</th>
-                                        <th scope="col">24h Change</th>
-                                        <th scope="col">Market Cap</th>
-                                        <th scope="col">Volume (24h)</th>
-                                        <th scope="col">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="cryptoTableBody">
-                                    <tr>
-                                        <td colspan="7" class="text-center">Loading data...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div class="order-book">
+                        <!-- Sell orders -->
+                        <div class="order-book-row order-book-sell">
+                            <span>65,100.00</span>
+                            <span>0.1523</span>
+                            <span>9,914.53</span>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+                        <!-- More sell orders... -->
 
-        <!-- Featured Coins Section -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <h3 class="mb-3">Featured Coins</h3>
-            </div>
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card crypto-card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div>
-                                <h5 class="mb-0">Bitcoin</h5>
-                                <span class="text-muted">BTC</span>
-                            </div>
-                            <div class="h4" id="btcPrice">$0.00</div>
+                        <div class="order-book-row text-center py-2">
+                            <span class="price-display">65,084.55</span>
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <div>24h Change</div>
-                            <div class="price-change" id="btcChange">0.00%</div>
+
+                        <!-- Buy orders -->
+                        <div class="order-book-row order-book-buy">
+                            <span>65,070.00</span>
+                            <span>0.2156</span>
+                            <span>14,029.09</span>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card crypto-card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div>
-                                <h5 class="mb-0">Ethereum</h5>
-                                <span class="text-muted">ETH</span>
-                            </div>
-                            <div class="h4" id="ethPrice">$0.00</div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <div>24h Change</div>
-                            <div class="price-change" id="ethChange">0.00%</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card crypto-card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div>
-                                <h5 class="mb-0">Binance Coin</h5>
-                                <span class="text-muted">BNB</span>
-                            </div>
-                            <div class="h4" id="bnbPrice">$0.00</div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <div>24h Change</div>
-                            <div class="price-change" id="bnbChange">0.00%</div>
-                        </div>
+                        <!-- More buy orders... -->
                     </div>
                 </div>
             </div>
         </div>
-    </main>
-
-    <!-- Modal for Coin Details -->
-    <div class="modal fade" id="coinDetailModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalCoinName">Coin Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6>Current Price</h6>
-                            <h3 id="modalCoinPrice">$0.00</h3>
-                            <p id="modalCoinChange" class="price-change">0.00%</p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6>Market Stats</h6>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Market Cap:</span>
-                                <span id="modalMarketCap">$0.00</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>24h Volume:</span>
-                                <span id="modal24hVolume">$0.00</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Circulating Supply:</span>
-                                <span id="modalCirculatingSupply">0</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Max Supply:</span>
-                                <span id="modalMaxSupply">0</span>
-                            </div>
-                        </div>
+        <!-- Recent Trades Section -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0" style="color: #ffeb3b;">Recent Trades</h5>
                     </div>
-                    <hr>
-                    <div class="row mt-3">
-                        <div class="col-md-12">
-                            <h6>Price History (Last 7 Days)</h6>
-                            <div id="priceChart" style="height: 250px;"></div>
-                        </div>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Price (USDT)</th>
+                                    <th>Amount (BTC)</th>
+                                    <th>Total (USDT)</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Trade rows will be inserted here -->
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="addToWatchlist">Add to Watchlist</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-light py-4 mt-5" role="contentinfo">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="mb-0">© 2025 Crypto Market Dashboard</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="mb-0">Data provided by <span id="apiAttribution">CoinGecko API</span></p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS Bundle with Popper -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Application Scripts -->
     <script type="module" src="js/app.js"></script>
 </body>
 </html>

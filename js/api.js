@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = process.env.API_BASE_URL || 'https://api.coingecko.com/api/v3';
+const API_BASE_URL = 'https://api.coingecko.com/api/v3';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 const cache = new Map();
 
@@ -20,7 +20,13 @@ function debounce(func, wait) {
 async function fetchWithRetry(url, options = {}, retries = 3) {
     for (let i = 0; i < retries; i++) {
         try {
-            const response = await fetch(url, options);
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    'Accept': 'application/json',
+                    ...options.headers
+                }
+            });
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             return await response.json();
         } catch (error) {
@@ -54,7 +60,7 @@ export const api = {
     async getCoinDetails(coinId) {
         const cacheKey = `coin_${coinId}`;
         return getCachedData(cacheKey, () =>
-            fetchWithRetry(`${API_BASE_URL}/coins/${coinId}`)
+            fetchWithRetry(`${API_BASE_URL}/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false`)
         );
     }
 };

@@ -4,8 +4,8 @@
   "description": "Live cryptocurrency market tracker",
   "main": "js/app.js",
   "scripts": {
-    "start": "webpack serve --mode development",
     "build": "webpack --mode production",
+    "watch": "webpack --watch --mode development",
     "test": "jest",
     "lint": "eslint src/**/*.js"
   },
@@ -22,7 +22,6 @@
     "jest": "^29.5.0",
     "style-loader": "^3.3.3",
     "webpack": "^5.85.0",
-    "webpack-cli": "^5.1.1",
-    "webpack-dev-server": "^4.15.0"
+    "webpack-cli": "^5.1.1"
   }
 } 

@@ -4,9 +4,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     entry: './js/app.js',
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.[contenthash].js',
-        clean: true
+        path: path.resolve(__dirname, './'),
+        filename: 'js/bundle.[contenthash].js',
+        publicPath: '/titovictoriano/kryptomarket/'
     },
     module: {
         rules: [
@@ -29,6 +29,7 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: './index.html',
+            filename: 'index.html',
             minify: {
                 collapseWhitespace: true,
                 removeComments: true,
@@ -39,14 +40,6 @@ module.exports = {
             }
         })
     ],
-    devServer: {
-        static: {
-            directory: path.join(__dirname, 'dist')
-        },
-        compress: true,
-        port: 9000,
-        hot: true
-    },
     optimization: {
         moduleIds: 'deterministic',
         runtimeChunk: 'single',
