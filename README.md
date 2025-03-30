@@ -7,9 +7,7 @@ A real-time cryptocurrency market tracker with live price updates, order book vi
 - Real-time cryptocurrency price updates using CoinCap API
 - Live order book display
 - Recent trades tracking
-- Interactive TradingView charts with multiple cryptocurrency pairs
-- Dark theme UI optimized for trading
-- Support for multiple major cryptocurrencies:
+- Interactive TradingView charts with multiple cryptocurrency pairs:
   - Bitcoin (BTC)
   - Ethereum (ETH)
   - Ripple (XRP)
@@ -18,53 +16,50 @@ A real-time cryptocurrency market tracker with live price updates, order book vi
   - Cardano (ADA)
   - Polkadot (DOT)
   - Solana (SOL)
+- Dark theme UI optimized for trading
 
 ## Technology Stack
 
-- Frontend: HTML5, JavaScript (ES6+), CSS3
-- Real-time Data: CoinCap WebSocket API
-- Charting: TradingView Widget API
-- Styling: Bootstrap 5
-- Build Tools: Webpack
-
-## Getting Started
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/tvictori/kryptomarket.git
-   cd kryptomarket
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the development server:
-   ```bash
-   npm run watch
-   ```
-
-4. Build for production:
-   ```bash
-   npm run build
-   ```
+- HTML5, JavaScript (ES6+), CSS3
+- CoinCap WebSocket API for real-time data
+- TradingView Widget API for charts
+- Bootstrap 5 for styling
 
 ## Project Structure
 
 ```
 kryptomarket/
+├── index.html          # Main HTML file
 ├── js/
-│   ├── app.js                 # Main application entry point
-│   ├── api.js                 # API configuration and helpers
-│   ├── components.js          # UI components
-│   ├── utils.js              # Utility functions
+│   ├── app.js         # Main application logic
+│   ├── api.js         # API configuration
+│   ├── components.js  # UI components
+│   ├── utils.js       # Utility functions
 │   └── services/
-│       └── coincap-service.js # CoinCap API integration
-├── index.html                 # Main HTML file
-├── package.json              # Project dependencies and scripts
-└── webpack.config.js         # Webpack configuration
+│       └── coincap-service.js  # CoinCap API integration
+└── images/            # Image assets
 ```
+
+## Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/tvictori/kryptomarket.git
+   ```
+
+2. Deploy to Apache/Wamp Server:
+   - Copy the project directory to your Apache web root (e.g., `C:\wamp64\www\` or `/var/www/html/`)
+   - Access the site through `http://localhost/kryptomarket/`
+
+## Development
+
+The project uses vanilla JavaScript with ES6 modules. No build tools or dependencies are required.
+
+Key files:
+- `app.js`: Main application entry point
+- `coincap-service.js`: Handles real-time data from CoinCap
+- `components.js`: UI component rendering
+- `utils.js`: Helper functions
 
 ## Contributing
 
